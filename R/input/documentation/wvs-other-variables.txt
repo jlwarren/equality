@@ -1,0 +1,125 @@
+# --------------------------- Keep Relevant Data ---------------------------
+
+# Overview of variables that might be of interest
+#------------------------------------------------------------------------------------
+#| #### Administrative ####
+#|"S002", "S003", "S007", "S020"
+#|"Wave", "Country", "ID", "Year"
+#|
+#| #### Socio-Demographic ####
+#|"X001", "X002", "X003", "X007", "X011", "X025", "X028", "X036", 
+#|"X045", "X045B", "X047", "X047b", "X047R", "X049",
+#|"X051", "Y001", "X052"
+#|"Female" ,"Year.Born", "Age", "Marital.Status", "Children", "Highest.Education", "Employment.Status", "Profession", 
+#|"Subjective.Social.Class", "Subjective.Social.Class.WAVE2", "Income.Scale", "Monthly.Income", "Income.Level", "Town.Size",
+#|"Ethnic.Group", "Post.Materialist.Index", "Employment.Institution"
+#|
+#| #### Perceptions of Life ####
+#|"A001","A002", "A003", "A004", "A005", "A006",
+#|"A008", "A009", "A165", "A170", "A173"
+#|"Family.Important", "Friends.Important", "Leisure.Important", "Politics.Important", "Work.Important", "Religion.Important",
+#|"Feeling.Happy", "Health.Status", "Trust", "Life.Satisfaction", "Freedom.Of.Choice" 
+#|       (I did not include variables about neighbours, of which there are many)
+#|
+#| #### Opinions on work ####
+#|"C001", "C002", "C006", "C059"
+#|"Men.More.Right.To.Job", "Employers.Should.Prioritize.Nationals", "Financial.Satisfaction", "Fair.If.One.Secretary.Paid.More"
+#|
+#| #### Opinions on family ####
+#|"D018", "D022", "D023", "D057"
+#|"Child.Needs.Both.Father.And.Mother", "Marriage.Outdated", "Approve.Woman.Single.Parent", "Being.Housewife.Just.As.Fulfilling"
+#|
+#| #### Politics and society ####
+#|"E001", "E003", "E005", "E006", "E022", 
+#|"E012", "E014", "E015", "E018",
+#|"E019", "E023", "E033"
+#|"E025", "E026", "E027",
+#|"E035", "E036", "E037", "E039", "E040",
+#|"E069_01", "E069_04", "E069_05", "E069_06", "E069_08", 
+#|"E069_10", "E069_12", "E069_13", "E069_18",
+#|"E179", "E180", "G006"
+#|"Country.Should.Aim.For", "Respondent.Aim.For". "Most.Important", "Second.Most.Important", "Scientific.Advances.Help",
+#|"Willing.To.Fight.For.Country", "Less.Emphasis.On.Possessions.Good", "Work.Less.Important.Good", "Greater.Respect.Authority.Good",
+#|"More.Emphasis.Family.Good", "Political.Interest", "Subjective.Left.Right",  
+#|"Act.Signed.Petition", "Act.Boycotted", "Act.Demonstrated", # (Political actions)
+#|"More.Economic.Equality", "More.Government.Ownership", "More.Government.Responsibility", "Work.Brings.Success", "Competition.Good",
+#|"Confidence.Churches", "Confidence.Press", "Confidence.Unions", "Confidence.Police", "Confidence.Civil.Service", # (Confidence)
+#|"Confidence.Television", "Confidence.Political.Parties", "Major.Companies", "Confidence.EU",
+#|"Party.Choice", "Party.Second.Choice", "Proud.Nationality"
+#|
+#| #### Religion and morale ####
+#|"F001", "F025", "F028", "F034", 
+#|"F114", "F116", "F117", "F118",
+#|"F119", "F120", "F121", "F122"
+#|"Time.Thinking.About.Meaning.Life", "Religious.Denomination", "Religious.Attendance", "Religious", 
+#|"Justifiable.Claiming.Government.Benefits", "Justifiable.Cheating.Taxes", "Justifiable.Accepting.Bribe", "Justifiable.Homosexuality",
+#|"Justifiable.Prostitution", "Justifiable.Abortion", "Justifiable.Divorce", "Justifiable.Euthanasia"
+#------------------------------------------------------------------------------------
+
+# The first wave does not include the relevant questions on equality and redistribution
+wvs.data <- wvs.data[ which(wvs.data$S001 != "1"), ]
+
+# Keep all variables that might be of interest
+wvs.data.variables <- c("S002", "S003", "S007", "S020",                                  # (adminstrative)
+                        "X001", "X002", "X003", "X007", "X011", "X025", "X028", "X036",  # (socio-demographic)
+                        "X045", "X045B", "X047", "X047b", "X047R", "X049",
+                        "X051", "Y001", "X052",
+                        "A001", "A002", "A003", "A004", "A005", "A006",                   # (perception of life)
+                        "A008", "A009", "A165", "A170", "A173",
+                        "C001", "C002", "C006", "C059",                                  # (opinions on work)
+                        "D018", "D022", "D023", "D057",                                  # (opinions on family)
+                        "E001", "E003", "E005", "E006", "E022",                          # (politics and society)
+                        "E012", "E014", "E015", "E018",
+                        "E019", "E023", "E033",
+                        "E025", "E026", "E027",
+                        "E035", "E036", "E037", "E039", "E040",
+                        "E069_01", "E069_04", "E069_05", "E069_06", "E069_08", 
+                        "E069_10", "E069_12", "E069_13", "E069_18",
+                        "E179", "E180", "G006",
+                        "F001", "F025", "F028", "F034",                                  # (religion and morale)
+                        "F114", "F116", "F117", "F118",
+                        "F119", "F120", "F121", "F122")
+
+wvs.data <- wvs.data[, wvs.data.variables]
+
+# Rename variables
+names(wvs.data) <- c("Wave", "Country", "ID", "Year",
+                     "Female" ,"Year.Born", "Age", "Marital.Status", "Children", "Highest.Education", "Employment.Status", "Profession", 
+                     "Subjective.Social.Class", "Subjective.Social.Class.WAVE2", "Income.Scale", "Monthly.Income", "Income.Level", "Town.Size",
+                     "Ethnic.Group", "Post.Materialist.Index", "Employment.Institution",
+                     # (perception of life)
+                     "Family.Important", "Friends.Important", "Leisure.Important", "Politics.Important", "Work.Important", "Religion.Important",
+                     "Feeling.Happy", "Health.Status", "Trust", "Life.Satisfaction", "Freedom.Of.Choice",
+                     # (opinions on work)
+                     "Men.More.Right.To.Job", "Employers.Should.Prioritize.Nationals", "Financial.Satisfaction", "Fair.If.One.Secretary.Paid.More",
+                     # (opinions on family)
+                     "Child.Needs.Both.Father.And.Mother", "Marriage.Outdated", "Approve.Woman.Single.Parent", "Being.Housewife.Just.As.Fulfilling",
+                     # (politics and society)
+                     "Country.Should.Aim.For", "Respondent.Aim.For". "Most.Important", "Second.Most.Important", "Scientific.Advances.Help",
+                     "Willing.To.Fight.For.Country", "Less.Emphasis.On.Possessions.Good", "Work.Less.Important.Good", "Greater.Respect.Authority.Good",
+                     "More.Emphasis.Family.Good", "Political.Interest", "Subjective.Left.Right",  
+                     "Act.Signed.Petition", "Act.Boycotted", "Act.Demonstrated", 
+                     "More.Economic.Equality", "More.Government.Ownership", "More.Government.Responsibility", "Work.Brings.Success", "Competition.Good",
+                     "Confidence.Churches", "Confidence.Press", "Confidence.Unions", "Confidence.Police", "Confidence.Civil.Service",
+                     "Confidence.Television", "Confidence.Political.Parties", "Major.Companies", "Confidence.EU",
+                     "Party.Choice", "Party.Second.Choice", "Proud.Nationality",
+                     # (religion and morale)
+                     "Time.Thinking.About.Meaning.Life", "Religious.Denomination", "Religious.Attendance", "Religious", 
+                     "Justifiable.Claiming.Government.Benefits", "Justifiable.Cheating.Taxes", "Justifiable.Accepting.Bribe", "Justifiable.Homosexuality",
+                     "Justifiable.Prostitution", "Justifiable.Abortion", "Justifiable.Divorce", "Justifiable.Euthanasia")
+
+# Save full data set to file
+# save(wvs.data, file="output/wvs.data.full.RData")
+
+# Keep variables of actual interest
+wvs.data.interesting.variables <- c("Wave", "Country", "ID", "Year",
+                                    "Female" ,"Year.Born", "Age", "Marital.Status", "Children", "Highest.Education", "Employment.Status", "Profession", 
+                                    "Subjective.Social.Class", "Subjective.Social.Class.WAVE2", "Income.Scale", "Monthly.Income", "Income.Level", "Town.Size",
+                                    "Ethnic.Group", "Post.Materialist.Index", "Employment.Institution",
+                                    "Financial.Situation", "Work.Important", "Feeling.Happy", "Health.Status", "Trust", "Life.Satisfaction", "Freedom.Of.Choice",
+                                    "Religious", "Political.Interest", "Subjective.Left.Right",  
+                                    "Act.Signed.Petition", "Act.Boycotted", "Act.Demonstrated",
+                                    "More.Economic.Equality", "More.Government.Ownership", "Government.Responsibility", "Competition.Good",
+                                    "Country.Should.Aim.For", "Political.Interest", "Subjective.Left.Right")
+
+wvs.data <- wvs.data[, wvs.data.intersting.variables]
