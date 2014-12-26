@@ -13,11 +13,11 @@
 
 # --------------------------- Start Matter ---------------------------
 
-# Set WD
-#setwd("~/Dropbox/projects/equality/R")
-
 # Clear workspace
 rm(list = ls())
+
+# Set WD
+#setwd("~/Dropbox/projects/equality/R")
 
 # Set seed
 set.seed(123)
