@@ -52,6 +52,9 @@ wvsData$X.1 <- NULL
 wvsData$Country.y <- NULL
 wvsData$Year.y <- NULL
 
+# Add variable with current date
+wvsData$DateRun3 <- Sys.Date()
+
 
 # --------------------------- Create A Data Frame For Country-level Data ---------------------------
 

@@ -28,7 +28,7 @@ library(ineq)                       # for computing subjective aggregate inequal
 
 # Define parsing functions
 reverse <- function(x) {
-  # Reverse a variable so that the first is last, and so on.
+  # Reverse a variable so that the first value is last, and so on.
   #
   # Args:
   #   x: list of vectors to be reversed.
@@ -60,7 +60,7 @@ wvsDataVariables <- c("S002", "S003", "S007", "S020", "S025", "X001", "X002", "X
 wvsData <- wvsData[, wvsDataVariables]
 
 # Rename variables
-wvsDataNames <- c("Wave", "Country", "ID", "Year", "CountryYear", "Female" ,"YearBorn", "Age", "MaritalStatus", "Children", "HighestEducation", "EmploymentStatus", "Profession", "SubjectiveSocialClass", "SubjectiveSocialClassWAVE2", "IncomeScale", "MonthlyIncome", "IncomeLevel", "TownSize", "EthnicGroup", "PostMaterialistIndex", "EmploymentInstitution", "FinancialSatsifaction", "WorkImportant", "FeelingHappy", "HealthStatus", "Trust", "LifeSatisfaction", "FreedomOfChoice", "Religious", "PoliticalInterest", "SubjectiveLeftRight", "ActSignedPetition", "ActBoycotted", "ActDemonstrated", "MoreEconomicEquality", "MoreGovernmentOwnership", "MoreGovernmentResponsibility", "CompetitionGood", "WorkBringsSuccess", "CountryShouldAimFor", "Income")
+wvsDataNames <- c("Wave", "Country", "ID", "Year", "CountryYear", "Female" ,"YearBorn", "Age", "MaritalStatus", "Children", "HighestEducation", "EmploymentStatus", "Profession", "SubjectiveSocialClass", "SubjectiveSocialClassWAVE2", "IncomeScale", "MonthlyIncome", "IncomeLevel", "TownSize", "EthnicGroup", "PostMaterialistIndex", "EmploymentInstitution", "FinancialSatisfaction", "WorkImportant", "FeelingHappy", "HealthStatus", "Trust", "LifeSatisfaction", "FreedomOfChoice", "Religious", "PoliticalInterest", "SubjectiveLeftRight", "ActSignedPetition", "ActBoycotted", "ActDemonstrated", "MoreEconomicEquality", "MoreGovernmentOwnership", "MoreGovernmentResponsibility", "CompetitionGood", "WorkBringsSuccess", "CountryShouldAimFor", "Income")
 names(wvsData) <- wvsDataNames
 
 
@@ -209,6 +209,9 @@ wvsData$PoliticalInterest <- reverse(wvsData$PoliticalInterest)         # higher
 wvsData$MoreEconomicEquality <- reverse(wvsData$MoreEconomicEquality)   # higher value = more equality
 wvsData$CompetitionGood <- reverse(wvsData$CompetitionGood)             # higher value = competition is better
 
+# Add variable with current date
+wvsData$DateRun1 <- Sys.Date()
+
 
 # --------------------------- Compute Subjective Inequality Measures ---------------------------
 
@@ -256,6 +259,61 @@ wvsData <- rename(wvsData, c(Country.x="Country"))
 wvsData <- rename(wvsData, c(Year.x="Year"))
 wvsData$Year.y <- NULL
 wvsData$Country.y <- NULL
+
+
+# --------------------------- Compute Satisfaction Inequality Measures ---------------------------
+
+# Create a data frame to contain measures based on each country-year
+wvsMeasures2 <- unique(wvsData[, c(3,5,1)])
+wvsMeasures2$SatisfactionGini <- NA
+wvsMeasures2$SatisfactionRS <- NA
+wvsMeasures2$SatisfactionAtkinson <- NA
+wvsMeasures2$SatisfactionKolm <- NA
+wvsMeasures2$SatisfactionVariation <- NA
+wvsMeasures2$SatisfactionEntropy <- NA
+
+# Compute measures
+for (i in 1:nrow(wvsMeasures2)) {
+  # Extract income data from specific country/year
+  wvsTemp <- wvsData[-c(which(wvsData$CountryYear != i)), ]
+  incomeMeasure <- wvsTemp$FinancialSatisfaction
+  
+  # Compute each measure in turn
+  gini <- Gini(incomeMeasure, corr = FALSE, na.rm = TRUE)
+  rs <- RS(incomeMeasure, na.rm = TRUE)
+  atkinson <- Atkinson(incomeMeasure, parameter = NULL, na.rm = TRUE)
+  theil <- Theil(incomeMeasure, parameter = NULL, na.rm = TRUE)
+  kolm <- Kolm(incomeMeasure, parameter = NULL, na.rm = TRUE)
+  var <- var(incomeMeasure, na.rm = TRUE)
+  entropy <- entropy(incomeMeasure, parameter = NULL, na.rm = TRUE)
+  
+  # Input measures into the data frame
+  wvsMeasures2$SatisfactionGini <- ifelse(wvsMeasures2$CountryYear == i, as.character(gini), as.character(wvsMeasures2$SatisfactionGini))
+  wvsMeasures2$SatisfactionRS <- ifelse(wvsMeasures2$CountryYear == i, as.character(rs), as.character(wvsMeasures2$SatisfactionRS))
+  wvsMeasures2$SatisfactionAtkinson <- ifelse(wvsMeasures2$CountryYear == i, as.character(atkinson), as.character(wvsMeasures2$SatisfactionAtkinson))
+  wvsMeasures2$SatisfactionTheil <- ifelse(wvsMeasures2$CountryYear == i, as.character(theil), as.character(wvsMeasures2$SatisfactionTheil))
+  wvsMeasures2$SatisfactionKolm <- ifelse(wvsMeasures2$CountryYear == i, as.character(kolm), as.character(wvsMeasures2$SatisfactionKolm))
+  wvsMeasures2$SatisfactionVariation <- ifelse(wvsMeasures2$CountryYear == i, as.character(var), as.character(wvsMeasures2$SatisfactionVariation))
+  wvsMeasures2$SatisfactionEntropy <- ifelse(wvsMeasures2$CountryYear == i, as.character(entropy), as.character(wvsMeasures2$SatisfactionEntropy))
+                                       
+  # Print country-year as overview of loop-progress
+  print(i)
+}
+
+# Merge measures with WVS data and WVS subjective income inequality
+wvsData <- merge(wvsData, wvsMeasures2, by = "CountryYear")
+wvsData <- rename(wvsData, c(Country.x="Country"))
+wvsData <- rename(wvsData, c(Year.x="Year"))
+wvsData$Year.y <- NULL
+wvsData$Country.y <- NULL
+
+# Merge measures with subjective income inequality measures
+wvsMeasures <- merge(wvsMeasures, wvsMeasures2, by = "CountryYear")
+wvsMeasures <- rename(wvsMeasures, c(Country.x = "Country"))
+wvsMeasures <- rename(wvsMeasures, c(Year.x = "Year"))
+wvsMeasures$Year.y <- NULL
+wvsMeasures$Country.y <- NULL
+
 
 # --------------------------- Create Data Frame Including Countries and Years ---------------------------
 

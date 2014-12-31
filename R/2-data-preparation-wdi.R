@@ -27,7 +27,7 @@ library(WDI)                       # package for downloading Word Development In
 library(countrycode)               # package for converting country names into iso-2 characters used by the WDI package
 
 # Update WDI list 
-#WDIcache()                        # the WDI package only ships with information on series available mid-2012 so update is need (once)
+#WDIcache()                        # the WDI package only ships with information on series available mid-2012 so update is needed (once)
 
 
 # --------------------------- Import WVS Meta Data ---------------------------
@@ -123,8 +123,12 @@ wdiData <- merge(wdiData, wvsCountryYear, by = c("Country", "Year"))
 wdiData$CountryIso2 <- NULL
 wdiData$X.x <- NULL
 wdiData$X.y <- NULL
+wdiData$X <- NULL
 wdiData$freq.x <- NULL
 wdiData$freq.y <- NULL
+
+# Add variable with current date
+wdiData$DateRun2 <- Sys.Date()
 
 
 # ---------------------------  Write Data To File ---------------------------
